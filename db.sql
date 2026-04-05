@@ -1,10 +1,35 @@
+-- Таблица заявок
 CREATE TABLE application (
-  id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  name varchar(128) NOT NULL DEFAULT '',
-  year int(10) NOT NULL DEFAULT 0,
-  ability_god int(1) NOT NULL DEFAULT 0,
-  ability_fly int(1) NOT NULL DEFAULT 0,
-  ability_idclip int(1) NOT NULL DEFAULT 0,
-  ability_fireball int(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (id)
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    full_name VARCHAR(150) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    birth_date DATE NOT NULL,
+    gender ENUM('male', 'female') NOT NULL,
+    biography TEXT,
+    agreed BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
 );
+
+-- Таблица языков программирования (справочник)
+CREATE TABLE programming_language (
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
+);
+
+-- Таблица связи (один ко многим)
+CREATE TABLE application_language (
+    application_id INT(10) UNSIGNED NOT NULL,
+    language_id INT(10) UNSIGNED NOT NULL,
+    FOREIGN KEY (application_id) REFERENCES application(id) ON DELETE CASCADE,
+    FOREIGN KEY (language_id) REFERENCES programming_language(id),
+    PRIMARY KEY (application_id, language_id)
+);
+
+-- Вставка допустимых языков
+INSERT INTO programming_language (name) VALUES
+('Pascal'), ('C'), ('C++'), ('JavaScript'), ('PHP'),
+('Python'), ('Java'), ('Haskell'), ('Clojure'),
+('Prolog'), ('Scala'), ('Go');
