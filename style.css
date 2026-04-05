@@ -7,35 +7,39 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
 }
 
 h1 {
     text-align: center;
-    color: #333;
-    margin-bottom: 20px;
+    color: #fff;
+    margin-bottom: 30px;
+    font-size: 28px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
 form {
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto;
     background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
 }
 
 input[type="text"],
@@ -45,10 +49,23 @@ input[type="date"],
 textarea,
 select {
     width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
     font-size: 14px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
 }
 
 textarea {
@@ -57,12 +74,12 @@ textarea {
 }
 
 select[multiple] {
-    height: 120px;
+    height: 130px;
 }
 
-.radio-group,
-.checkbox-group {
-    margin: 5px 0;
+.radio-group {
+    display: inline-block;
+    margin-right: 20px;
 }
 
 .radio-group label,
@@ -70,40 +87,71 @@ select[multiple] {
     display: inline;
     font-weight: normal;
     margin-left: 5px;
+    color: #555;
 }
 
 .radio-group input,
 .checkbox-group input {
     width: auto;
     margin-right: 5px;
+    cursor: pointer;
+}
+
+.checkbox-group {
+    margin: 10px 0;
 }
 
 .error {
-    color: red;
+    color: #e74c3c;
     font-size: 12px;
     margin-top: 5px;
+    padding: 5px;
+    background-color: #fde8e8;
+    border-radius: 5px;
 }
 
 button {
-    background-color: #4CAF50;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: 600;
     width: 100%;
+    transition: all 0.3s ease;
+    margin-top: 10px;
 }
 
 button:hover {
-    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 .success {
     background-color: #d4edda;
     color: #155724;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 12px;
+    border-radius: 8px;
     margin-bottom: 20px;
     text-align: center;
+    border-left: 4px solid #28a745;
+}
+
+small {
+    display: block;
+    margin-top: 5px;
+    font-size: 11px;
+    color: #888;
+}
+
+hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #eee;
 }
