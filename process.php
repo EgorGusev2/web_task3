@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $errors = [];
 $allowedLanguages = ['Pascal', 'C', 'C++', 'JavaScript', 'PHP', 'Python', 'Java', 'Haskell', 'Clojure', 'Prolog', 'Scala', 'Go'];
 
-// ФИО (используем strlen вместо mb_strlen)
+// ФИО
 if (empty($_POST['fio'])) {
     $errors['fio'] = 'Заполните ФИО.';
 } elseif (!preg_match('/^[а-яА-ЯёЁa-zA-Z\s\-]+$/u', $_POST['fio'])) {
@@ -41,9 +41,17 @@ if (empty($_POST['birthdate'])) {
     $errors['birthdate'] = 'Заполните дату рождения.';
 } else {
     $birthdate = DateTime::createFromFormat('Y-m-d', $_POST['birthdate']);
-    $today = new DateTime();
-    if ($birthdate && $birthdate->diff($today)->y < 18) {
-        $errors['birthdate'] = 'Вы должны быть старше 18 лет.';
+    if (!$birthdate) {
+        $errors['birthdate'] = 'Неверный формат даты. Используйте ГГГГ-ММ-ДД (например, 2001-02-06).';
+    } else {
+        $today = new DateTime();
+        $age = $birthdate->diff($today)->y;
+        if ($age < 18) {
+            $errors['birthdate'] = 'Вы должны быть старше 18 лет.';
+        }
+        if ($age > 150) {
+            $errors['birthdate'] = 'Некорректная дата рождения.';
+        }
     }
 }
 
@@ -66,7 +74,7 @@ if (empty($_POST['languages'])) {
     }
 }
 
-// Биография (используем strlen вместо mb_strlen)
+// Биография
 if (empty($_POST['bio'])) {
     $errors['bio'] = 'Заполните биографию.';
 } elseif (strlen($_POST['bio']) > 5000) {
@@ -112,7 +120,7 @@ try {
     // Получаем ID последней записи
     $applicationId = $db->lastInsertId();
     
-    // Вставка языков программирования (по ID из справочника)
+    // Вставка языков программирования
     $stmt = $db->prepare("INSERT INTO application_language (application_id, language_id) 
                           VALUES (?, (SELECT id FROM programming_language WHERE name = ?))");
     foreach ($_POST['languages'] as $lang) {
