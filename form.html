@@ -17,6 +17,11 @@
         <?php if (!empty($errors)): ?>
             <div class="error-summary">
                 <strong>Пожалуйста, исправьте следующие ошибки:</strong>
+                <ul>
+                <?php foreach ($errors as $error): ?>
+                    <li><?php echo $error; ?></li>
+                <?php endforeach; ?>
+                </ul>
             </div>
         <?php endif; ?>
         
@@ -24,7 +29,8 @@
             <div class="form-group">
                 <label for="fio">ФИО:</label>
                 <input type="text" id="fio" name="fio" 
-                       value="<?php echo isset($_POST['fio']) ? htmlspecialchars($_POST['fio']) : ''; ?>" required>
+                       value="<?php echo isset($_POST['fio']) ? htmlspecialchars($_POST['fio']) : 'Гусев Егор'; ?>" 
+                       placeholder="Иванов Иван Иванович" required>
                 <?php if (isset($errors['fio'])): ?>
                     <div class="error"><?php echo $errors['fio']; ?></div>
                 <?php endif; ?>
@@ -33,8 +39,9 @@
             <div class="form-group">
                 <label for="phone">Телефон:</label>
                 <input type="tel" id="phone" name="phone" 
-                       value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>" 
+                       value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : '+79181264341'; ?>" 
                        placeholder="+7 (123) 456-78-90" required>
+                <small>Формат: +7 (999) 123-45-67 или 89121234567</small>
                 <?php if (isset($errors['phone'])): ?>
                     <div class="error"><?php echo $errors['phone']; ?></div>
                 <?php endif; ?>
@@ -43,7 +50,7 @@
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" 
-                       value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" 
+                       value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : 'egorgusev25@outlook.com'; ?>" 
                        placeholder="example@mail.ru" required>
                 <?php if (isset($errors['email'])): ?>
                     <div class="error"><?php echo $errors['email']; ?></div>
@@ -53,7 +60,9 @@
             <div class="form-group">
                 <label for="birthdate">Дата рождения:</label>
                 <input type="date" id="birthdate" name="birthdate" 
-                       value="<?php echo isset($_POST['birthdate']) ? htmlspecialchars($_POST['birthdate']) : ''; ?>" required>
+                       value="<?php echo isset($_POST['birthdate']) ? htmlspecialchars($_POST['birthdate']) : '2001-02-06'; ?>" 
+                       required>
+                <small>Формат: ГГГГ-ММ-ДД (например: 2001-02-06)</small>
                 <?php if (isset($errors['birthdate'])): ?>
                     <div class="error"><?php echo $errors['birthdate']; ?></div>
                 <?php endif; ?>
@@ -63,7 +72,7 @@
                 <label>Пол:</label>
                 <div class="radio-group">
                     <input type="radio" id="male" name="gender" value="male" 
-                           <?php echo (isset($_POST['gender']) && $_POST['gender'] == 'male') ? 'checked' : ''; ?> required>
+                           <?php echo (isset($_POST['gender']) && $_POST['gender'] == 'male') ? 'checked' : 'checked'; ?> required>
                     <label for="male">Мужской</label>
                 </div>
                 <div class="radio-group">
@@ -79,20 +88,20 @@
             <div class="form-group">
                 <label for="languages">Любимый язык программирования:</label>
                 <select id="languages" name="languages[]" multiple required>
-                    <option value="Pascal">Pascal</option>
-                    <option value="C">C</option>
-                    <option value="C++">C++</option>
-                    <option value="JavaScript">JavaScript</option>
-                    <option value="PHP">PHP</option>
-                    <option value="Python">Python</option>
-                    <option value="Java">Java</option>
-                    <option value="Haskell">Haskell</option>
-                    <option value="Clojure">Clojure</option>
-                    <option value="Prolog">Prolog</option>
-                    <option value="Scala">Scala</option>
-                    <option value="Go">Go</option>
+                    <option value="Pascal" <?php echo (isset($_POST['languages']) && in_array('Pascal', $_POST['languages'])) ? 'selected' : ''; ?>>Pascal</option>
+                    <option value="C" <?php echo (isset($_POST['languages']) && in_array('C', $_POST['languages'])) ? 'selected' : ''; ?>>C</option>
+                    <option value="C++" <?php echo (isset($_POST['languages']) && in_array('C++', $_POST['languages'])) ? 'selected' : ''; ?>>C++</option>
+                    <option value="JavaScript" <?php echo (isset($_POST['languages']) && in_array('JavaScript', $_POST['languages'])) ? 'selected' : ''; ?>>JavaScript</option>
+                    <option value="PHP" <?php echo (isset($_POST['languages']) && in_array('PHP', $_POST['languages'])) ? 'selected' : ''; ?>>PHP</option>
+                    <option value="Python" <?php echo (isset($_POST['languages']) && in_array('Python', $_POST['languages'])) ? 'selected' : ''; ?>>Python</option>
+                    <option value="Java" <?php echo (isset($_POST['languages']) && in_array('Java', $_POST['languages'])) ? 'selected' : ''; ?>>Java</option>
+                    <option value="Haskell" <?php echo (isset($_POST['languages']) && in_array('Haskell', $_POST['languages'])) ? 'selected' : ''; ?>>Haskell</option>
+                    <option value="Clojure" <?php echo (isset($_POST['languages']) && in_array('Clojure', $_POST['languages'])) ? 'selected' : ''; ?>>Clojure</option>
+                    <option value="Prolog" <?php echo (isset($_POST['languages']) && in_array('Prolog', $_POST['languages'])) ? 'selected' : ''; ?>>Prolog</option>
+                    <option value="Scala" <?php echo (isset($_POST['languages']) && in_array('Scala', $_POST['languages'])) ? 'selected' : ''; ?>>Scala</option>
+                    <option value="Go" <?php echo (isset($_POST['languages']) && in_array('Go', $_POST['languages'])) ? 'selected' : ''; ?>>Go</option>
                 </select>
-                <small>Для выбора нескольких языков зажмите Ctrl (Cmd) и кликайте</small>
+                <small>Для выбора нескольких языков зажмите Ctrl (Cmd) и кликайте. <strong>Выберите хотя бы один язык!</strong></small>
                 <?php if (isset($errors['languages'])): ?>
                     <div class="error"><?php echo $errors['languages']; ?></div>
                 <?php endif; ?>
@@ -100,7 +109,9 @@
 
             <div class="form-group">
                 <label for="bio">Биография:</label>
-                <textarea id="bio" name="bio" rows="5" placeholder="Расскажите о себе..." required><?php echo isset($_POST['bio']) ? htmlspecialchars($_POST['bio']) : ''; ?></textarea>
+                <textarea id="bio" name="bio" rows="5" placeholder="Расскажите о себе..." required><?php 
+                    echo isset($_POST['bio']) ? htmlspecialchars($_POST['bio']) : 'dfvsdv'; 
+                ?></textarea>
                 <?php if (isset($errors['bio'])): ?>
                     <div class="error"><?php echo $errors['bio']; ?></div>
                 <?php endif; ?>
@@ -109,7 +120,7 @@
             <div class="form-group">
                 <div class="checkbox-group">
                     <input type="checkbox" id="contract" name="contract" value="1" 
-                           <?php echo isset($_POST['contract']) ? 'checked' : ''; ?> required>
+                           <?php echo isset($_POST['contract']) ? 'checked' : 'checked'; ?> required>
                     <label for="contract">С контрактом ознакомлен</label>
                 </div>
                 <?php if (isset($errors['contract'])): ?>
