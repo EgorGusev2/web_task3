@@ -13,12 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $errors = [];
 $allowedLanguages = ['Pascal', 'C', 'C++', 'JavaScript', 'PHP', 'Python', 'Java', 'Haskell', 'Clojure', 'Prolog', 'Scala', 'Go'];
 
-// ФИО
+// ФИО (используем strlen вместо mb_strlen)
 if (empty($_POST['fio'])) {
     $errors['fio'] = 'Заполните ФИО.';
 } elseif (!preg_match('/^[а-яА-ЯёЁa-zA-Z\s\-]+$/u', $_POST['fio'])) {
     $errors['fio'] = 'ФИО должно содержать только буквы, пробелы и дефисы.';
-} elseif (mb_strlen($_POST['fio']) > 150) {
+} elseif (strlen($_POST['fio']) > 150) {
     $errors['fio'] = 'ФИО должно быть не длиннее 150 символов.';
 }
 
@@ -66,7 +66,7 @@ if (empty($_POST['languages'])) {
     }
 }
 
-// Биография
+// Биография (используем strlen вместо mb_strlen)
 if (empty($_POST['bio'])) {
     $errors['bio'] = 'Заполните биографию.';
 } elseif (strlen($_POST['bio']) > 5000) {
@@ -84,7 +84,7 @@ if (!empty($errors)) {
     exit();
 }
 
-// Подключение к базе данных (ваши данные u82361)
+// Подключение к базе данных
 $user = 'u82361';
 $pass = '9967838';
 $dbname = 'u82361';
