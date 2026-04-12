@@ -1,16 +1,29 @@
-
 <?php
+// form.php - обработчик формы
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 header('Content-Type: text/html; charset=UTF-8');
+
+// Если это GET запрос (например, после сохранения), показываем форму с сообщением
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    if (!empty($_GET['save'])) {
+        $successMessage = 'Спасибо, результаты сохранены.';
+    }
+    include('form.html');
+    exit();
+}
+
+// POST запрос - обрабатываем данные
 
 // Валидация данных
 $errors = [];
-$allowedLanguages = ['Pascal', 'C', 'C++', 'JavaScript', 'PHP', 'Python', 'Java', 'Haskel', 'Clojure', 'Prolog', 'Scala', 'Go'];
+$allowedLanguages = ['Pascal', 'C', 'C++', 'JavaScript', 'PHP', 'Python', 'Java', 'Haskell', 'Clojure', 'Prolog', 'Scala', 'Go'];
 
 // ФИО
 if (empty($_POST['fio'])) {
     $errors['fio'] = 'Заполните ФИО.';
-} elseif (!preg_match('/^[а-яА-ЯёЁa-zA-Z\s]+$/u', $_POST['fio'])) {
-    $errors['fio'] = 'ФИО должно содержать только буквы и пробелы.';
+} elseif (!preg_match('/^[а-яА-ЯёЁa-zA-Z\s\-]+$/u', $_POST['fio'])) {
+    $errors['fio'] = 'ФИО должно содержать только буквы, пробелы и дефисы.';
 } elseif (mb_strlen($_POST['fio']) > 150) {
     $errors['fio'] = 'ФИО должно быть не длиннее 150 символов.';
 }
@@ -18,8 +31,8 @@ if (empty($_POST['fio'])) {
 // Телефон
 if (empty($_POST['phone'])) {
     $errors['phone'] = 'Заполните телефон.';
-} elseif (!preg_match('/^\+?\d{10,15}$/', $_POST['phone'])) {
-    $errors['phone'] = 'Телефон должен содержать от 10 до 15 цифр.';
+} elseif (!preg_match('/^[\d\s\+\(\)\-]{10,20}$/', $_POST['phone'])) {
+    $errors['phone'] = 'Телефон должен содержать от 10 до 20 символов (цифры, +, -, пробелы, скобки).';
 }
 
 // Email
@@ -39,6 +52,8 @@ if (empty($_POST['birthdate'])) {
     
     if (!$birthdate || $birthdate > $today || $birthdate < $minAge) {
         $errors['birthdate'] = 'Введите корректную дату рождения.';
+    } elseif ($birthdate->diff($today)->y < 18) {
+        $errors['birthdate'] = 'Вы должны быть старше 18 лет.';
     }
 }
 
@@ -73,18 +88,19 @@ if (empty($_POST['contract'])) {
     $errors['contract'] = 'Необходимо ознакомиться с контрактом.';
 }
 
+// Если есть ошибки, показываем форму с ними
 if (!empty($errors)) {
     include('form.html');
     exit();
 }
 
 // Подключение к базе данных
-$user = 'u82361'; 
-$pass = '9967838'; 
+$user = 'u82361';
+$pass = '9967838';
 $dbname = 'u82361'; 
 
 try {
-    $db = new PDO("mysql:host=localhost;dbname=$dbname", $user, $pass, [
+    $db = new PDO("mysql:host=localhost;dbname=$dbname;charset=utf8", $user, $pass, [
         PDO::ATTR_PERSISTENT => true,
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
@@ -102,16 +118,17 @@ try {
         ':birthdate' => $_POST['birthdate'],
         ':gender' => $_POST['gender'],
         ':bio' => $_POST['bio'],
-        ':contract' => isset($_POST['contract']) ? 1 : 0
+        ':contract' => 1
     ]);
 
     // Получаем ID последней вставленной записи
     $applicationId = $db->lastInsertId();
 
-    // Вставка языков программирования
-    $stmt = $db->prepare("INSERT INTO application_languages (application_id, language) VALUES (:app_id, :lang)");
+    // Вставка языков программирования (используем ID языков из справочника)
+    $langStmt = $db->prepare("INSERT INTO application_languages (application_id, language_id) 
+                              VALUES (:app_id, (SELECT id FROM programming_languages WHERE name = :lang))");
     foreach ($_POST['languages'] as $lang) {
-        $stmt->execute([
+        $langStmt->execute([
             ':app_id' => $applicationId,
             ':lang' => $lang
         ]);
@@ -121,13 +138,16 @@ try {
     $db->commit();
 
     // Перенаправление с сообщением об успехе
-    header('Location: form.php?save=1');
+    header('Location: index.php?save=1');
     exit();
+    
 } catch (PDOException $e) {
     // Откат транзакции в случае ошибки
     if (isset($db) && $db->inTransaction()) {
         $db->rollBack();
     }
-    print('Ошибка: ' . $e->getMessage());
+    $errors['db'] = 'Ошибка базы данных: ' . $e->getMessage();
+    include('form.html');
     exit();
 }
+?>
