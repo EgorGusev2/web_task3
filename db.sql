@@ -1,5 +1,5 @@
 -- Таблица заявок
-CREATE TABLE application (
+CREATE TABLE IF NOT EXISTS application (
     id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
     full_name VARCHAR(150) NOT NULL,
     phone VARCHAR(20) NOT NULL,
@@ -13,14 +13,14 @@ CREATE TABLE application (
 );
 
 -- Таблица языков программирования (справочник)
-CREATE TABLE programming_language (
+CREATE TABLE IF NOT EXISTS programming_language (
     id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 
 -- Таблица связи (один ко многим)
-CREATE TABLE application_language (
+CREATE TABLE IF NOT EXISTS application_language (
     application_id INT(10) UNSIGNED NOT NULL,
     language_id INT(10) UNSIGNED NOT NULL,
     FOREIGN KEY (application_id) REFERENCES application(id) ON DELETE CASCADE,
@@ -32,4 +32,5 @@ CREATE TABLE application_language (
 INSERT INTO programming_language (name) VALUES
 ('Pascal'), ('C'), ('C++'), ('JavaScript'), ('PHP'),
 ('Python'), ('Java'), ('Haskell'), ('Clojure'),
-('Prolog'), ('Scala'), ('Go');
+('Prolog'), ('Scala'), ('Go')
+ON DUPLICATE KEY UPDATE name = name;
