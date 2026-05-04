@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Валидация данных
 $errors = [];
-$allowedLanguages = ['Pascal', 'C', 'C++', 'JavaScript', 'PHP', 'Python', 'Java', 'Haskell', 'Clojure', 'Prolog', 'Scala', 'Go'];
 
 // ФИО
 if (empty($_POST['fio'])) {
@@ -34,6 +33,8 @@ if (empty($_POST['email'])) {
     $errors['email'] = 'Заполните email.';
 } elseif (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
     $errors['email'] = 'Введите корректный email.';
+} elseif (strlen($_POST['email']) > 100) {
+    $errors['email'] = 'Email должен быть не длиннее 100 символов.';
 }
 
 // Дата рождения
@@ -42,7 +43,7 @@ if (empty($_POST['birthdate'])) {
 } else {
     $birthdate = DateTime::createFromFormat('Y-m-d', $_POST['birthdate']);
     if (!$birthdate) {
-        $errors['birthdate'] = 'Неверный формат даты. Используйте ГГГГ-ММ-ДД (например, 2001-02-06).';
+        $errors['birthdate'] = 'Неверный формат даты. Используйте ГГГГ-ММ-ДД.';
     } else {
         $today = new DateTime();
         $age = $birthdate->diff($today)->y;
@@ -62,26 +63,18 @@ if (empty($_POST['gender'])) {
     $errors['gender'] = 'Выбран недопустимый пол.';
 }
 
-// Языки программирования
-if (empty($_POST['languages'])) {
-    $errors['languages'] = 'Выберите хотя бы один язык программирования.';
-} else {
-    foreach ($_POST['languages'] as $lang) {
-        if (!in_array($lang, $allowedLanguages)) {
-            $errors['languages'] = 'Выбран недопустимый язык программирования.';
-            break;
-        }
-    }
-}
-
-// Биография
-if (empty($_POST['bio'])) {
-    $errors['bio'] = 'Заполните биографию.';
-} elseif (strlen($_POST['bio']) > 5000) {
+// Биография (опционально, может быть пустой)
+$bio = !empty($_POST['bio']) ? $_POST['bio'] : null;
+if (!empty($_POST['bio']) && strlen($_POST['bio']) > 5000) {
     $errors['bio'] = 'Биография должна быть не длиннее 5000 символов.';
 }
 
-// Контракт
+// Языки программирования
+if (empty($_POST['languages'])) {
+    $errors['languages'] = 'Выберите хотя бы один язык программирования.';
+}
+
+// Контракт (согласие)
 if (empty($_POST['contract'])) {
     $errors['contract'] = 'Необходимо ознакомиться с контрактом.';
 }
@@ -105,22 +98,33 @@ try {
     $db->beginTransaction();
     
     // Вставка данных в таблицу application
-    $stmt = $db->prepare("INSERT INTO application (fio, phone, email, birthdate, gender, bio) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $db->prepare("INSERT INTO application (full_name, phone, email, birth_date, gender, biography, agreed) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
-        $_POST['fio'],
-        $_POST['phone'],
-        $_POST['email'],
-        $_POST['birthdate'],
-        $_POST['gender'],
-        $_POST['bio']
+        $_POST['fio'],           // full_name
+        $_POST['phone'],         // phone
+        $_POST['email'],         // email
+        $_POST['birthdate'],     // birth_date
+        $_POST['gender'],        // gender
+        $bio,                    // biography (может быть NULL)
+        1                        // agreed (1 = true, так как чекбокс был отмечен)
     ]);
     
     $applicationId = $db->lastInsertId();
     
-    // Вставка выбранных языков программирования
-    $stmt = $db->prepare("INSERT INTO application_languages (application_id, language_name) VALUES (?, ?)");
-    foreach ($_POST['languages'] as $lang) {
-        $stmt->execute([$applicationId, $lang]);
+    // Получаем ID выбранных языков программирования и вставляем связи
+    // Сначала получим все языки из справочника
+    $stmt = $db->query("SELECT id, name FROM programming_language");
+    $languagesMap = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $languagesMap[$row['name']] = $row['id'];
+    }
+    
+    // Вставляем связи в таблицу application_language
+    $stmt = $db->prepare("INSERT INTO application_language (application_id, language_id) VALUES (?, ?)");
+    foreach ($_POST['languages'] as $langName) {
+        if (isset($languagesMap[$langName])) {
+            $stmt->execute([$applicationId, $languagesMap[$langName]]);
+        }
     }
     
     // Подтверждаем транзакцию
@@ -132,7 +136,7 @@ try {
     
 } catch (PDOException $e) {
     // Откатываем транзакцию при ошибке
-    if ($db->inTransaction()) {
+    if (isset($db) && $db->inTransaction()) {
         $db->rollBack();
     }
     $errors['db'] = 'Ошибка базы данных: ' . $e->getMessage();
