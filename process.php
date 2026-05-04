@@ -100,7 +100,41 @@ $dbname = 'u82361';
 try {
     $db = new PDO("mysql:host=localhost;dbname=$dbname;charset=utf8", $user, $pass);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Начинаем транзакцию
+    $db->beginTransaction();
+    
+    // Вставка данных в таблицу application
+    $stmt = $db->prepare("INSERT INTO application (fio, phone, email, birthdate, gender, bio) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->execute([
+        $_POST['fio'],
+        $_POST['phone'],
+        $_POST['email'],
+        $_POST['birthdate'],
+        $_POST['gender'],
+        $_POST['bio']
+    ]);
+    
+    $applicationId = $db->lastInsertId();
+    
+    // Вставка выбранных языков программирования
+    $stmt = $db->prepare("INSERT INTO application_languages (application_id, language_name) VALUES (?, ?)");
+    foreach ($_POST['languages'] as $lang) {
+        $stmt->execute([$applicationId, $lang]);
+    }
+    
+    // Подтверждаем транзакцию
+    $db->commit();
+    
+    // Перенаправляем на index.php с параметром save (очищаем POST данные)
+    header('Location: index.php?save=1');
+    exit();
+    
 } catch (PDOException $e) {
+    // Откатываем транзакцию при ошибке
+    if ($db->inTransaction()) {
+        $db->rollBack();
+    }
     $errors['db'] = 'Ошибка базы данных: ' . $e->getMessage();
     include('form.html');
     exit();
