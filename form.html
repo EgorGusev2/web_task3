@@ -3,67 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Анкета</title>
+    <title>Анкета разработчика</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Лабораторная работа №3</h1>
-
-    <p>Подключение к серверу через SSH</p>
-    <img src="img1.png" width="800">
-
-    <hr>
-
-    <p>Запуск клиента MySQL и вход в СУБД</p>
-    <img src="img2.png" width="800">
-
-    <hr>
-
-    <p>Подключение к своей базе данных</p>
-    <img src="img3.png" width="800">
-
-    <hr>
-
-    <p>Создание таблицы «application»</p>
-    <img src="img4.png" width="800">
-
-    <hr>
-
-    <p>Создание таблицы «programming_languages»</p>
-    <img src="img5.png" width="800">
-
-    <hr>
-
-    <p>Создание таблицы связей (Один ко многим)</p>
-    <img src="img6.png" width="800">
-
-    <hr>
-
-    <p>Заполнение языков программирования</p>
-    <img src="img7.png" width="800">
-
-    <hr>
-
-    <p>Финальная структура БД: все таблицы созданы </p>
-    <img src="img8.png" width="800">
-    
-    <hr>
-
-    <p>Создание HTML-формы и обработчика</p>
-    <img src="img9.png" width="800">
-    
-    <hr>
-
-    <p>Установка прав доступа</p>
-    <img src="img10.png" width="800">
-
-    <hr>
-
-    <p>Проверка БД: данные анкеты и выбранные языки</p>
-    <img src="img11.png" width="800">
-
-    <hr>
-    
     <div class="container">
         <h1>Анкета разработчика</h1>
         
@@ -86,7 +29,7 @@
             <div class="form-group">
                 <label for="fio">ФИО:</label>
                 <input type="text" id="fio" name="fio" 
-                       value="<?php echo isset($_POST['fio']) ? htmlspecialchars($_POST['fio']) : 'Гусев Егор'; ?>" 
+                       value="<?php echo isset($_POST['fio']) ? htmlspecialchars($_POST['fio']) : ''; ?>" 
                        placeholder="Иванов Иван Иванович" required>
                 <?php if (isset($errors['fio'])): ?>
                     <div class="error"><?php echo $errors['fio']; ?></div>
@@ -96,7 +39,7 @@
             <div class="form-group">
                 <label for="phone">Телефон:</label>
                 <input type="tel" id="phone" name="phone" 
-                       value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : '+79181264341'; ?>" 
+                       value="<?php echo isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : ''; ?>" 
                        placeholder="+7 (123) 456-78-90" required>
                 <small>Формат: +7 (999) 123-45-67 или 89121234567</small>
                 <?php if (isset($errors['phone'])): ?>
@@ -107,7 +50,7 @@
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" 
-                       value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : 'egorgusev25@outlook.com'; ?>" 
+                       value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" 
                        placeholder="example@mail.ru" required>
                 <?php if (isset($errors['email'])): ?>
                     <div class="error"><?php echo $errors['email']; ?></div>
@@ -117,7 +60,7 @@
             <div class="form-group">
                 <label for="birthdate">Дата рождения:</label>
                 <input type="date" id="birthdate" name="birthdate" 
-                       value="<?php echo isset($_POST['birthdate']) ? htmlspecialchars($_POST['birthdate']) : '2001-02-06'; ?>" 
+                       value="<?php echo isset($_POST['birthdate']) ? htmlspecialchars($_POST['birthdate']) : ''; ?>" 
                        required>
                 <small>Формат: ГГГГ-ММ-ДД (например: 2001-02-06)</small>
                 <?php if (isset($errors['birthdate'])): ?>
@@ -129,7 +72,7 @@
                 <label>Пол:</label>
                 <div class="radio-group">
                     <input type="radio" id="male" name="gender" value="male" 
-                           <?php echo (isset($_POST['gender']) && $_POST['gender'] == 'male') ? 'checked' : 'checked'; ?> required>
+                           <?php echo (isset($_POST['gender']) && $_POST['gender'] == 'male') ? 'checked' : ''; ?> required>
                     <label for="male">Мужской</label>
                 </div>
                 <div class="radio-group">
@@ -167,7 +110,7 @@
             <div class="form-group">
                 <label for="bio">Биография:</label>
                 <textarea id="bio" name="bio" rows="5" placeholder="Расскажите о себе..." required><?php 
-                    echo isset($_POST['bio']) ? htmlspecialchars($_POST['bio']) : 'dfvsdv'; 
+                    echo isset($_POST['bio']) ? htmlspecialchars($_POST['bio']) : ''; 
                 ?></textarea>
                 <?php if (isset($errors['bio'])): ?>
                     <div class="error"><?php echo $errors['bio']; ?></div>
@@ -177,7 +120,7 @@
             <div class="form-group">
                 <div class="checkbox-group">
                     <input type="checkbox" id="contract" name="contract" value="1" 
-                           <?php echo isset($_POST['contract']) ? 'checked' : 'checked'; ?> required>
+                           <?php echo isset($_POST['contract']) ? 'checked' : ''; ?> required>
                     <label for="contract">С контрактом ознакомлен</label>
                 </div>
                 <?php if (isset($errors['contract'])): ?>
